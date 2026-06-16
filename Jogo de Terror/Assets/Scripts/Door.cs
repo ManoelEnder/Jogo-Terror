@@ -1,20 +1,22 @@
 using UnityEngine;
 
-public class Door : MonoBehaviour
+public sealed class Door : MonoBehaviour
 {
     [SerializeField] private float openAngle = 90f;
     [SerializeField] private float openSpeed = 3f;
 
     private bool playerNear;
-    private bool isOpen;
+    private bool opened;
+
+    private Inventory inventory;
 
     private Quaternion closedRotation;
     private Quaternion openedRotation;
-    private Inventory playerInventory;
 
     private void Awake()
     {
         closedRotation = transform.rotation;
+
         openedRotation = Quaternion.Euler(
             transform.eulerAngles + new Vector3(0, openAngle, 0)
         );
@@ -22,12 +24,12 @@ public class Door : MonoBehaviour
 
     private void Update()
     {
-        if (playerNear && playerInventory.HasKey && Input.GetKeyDown(KeyCode.E))
+        if (playerNear && inventory.HasKey && Input.GetKeyDown(KeyCode.E))
         {
-            isOpen = true;
+            opened = true;
         }
 
-        if (isOpen)
+        if (opened)
         {
             transform.rotation = Quaternion.Lerp(
                 transform.rotation,
@@ -39,19 +41,16 @@ public class Door : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out Inventory inventory))
+        if (other.TryGetComponent(out Inventory playerInventory))
         {
+            inventory = playerInventory;
             playerNear = true;
-            playerInventory = inventory;
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out Inventory inventory))
-        {
-            playerNear = false;
-            playerInventory = null;
-        }
+        playerNear = false;
+        inventory = null;
     }
 }
