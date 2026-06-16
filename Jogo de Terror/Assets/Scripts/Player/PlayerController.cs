@@ -9,33 +9,40 @@ public sealed class PlayerController : MonoBehaviour
     [SerializeField] private float gravity = -9.81f;
 
     private CharacterController characterController;
+    private InputSystem_Actions inputActions;
+
     private Vector2 moveInput;
     private Vector3 velocity;
-    private bool jumpRequested;
 
     private void Awake()
     {
         characterController = GetComponent<CharacterController>();
+        inputActions = new InputSystem_Actions();
+
+        inputActions.Player.Move.performed += context =>
+            moveInput = context.ReadValue<Vector2>();
+
+        inputActions.Player.Move.canceled += _ =>
+            moveInput = Vector2.zero;
+
+        inputActions.Player.Jump.performed += _ =>
+            Jump();
+    }
+
+    private void OnEnable()
+    {
+        inputActions.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputActions.Disable();
     }
 
     private void Update()
     {
         HandleMovement();
-        HandleJump();
         ApplyGravity();
-    }
-
-    public void OnMove(InputAction.CallbackContext context)
-    {
-        moveInput = context.ReadValue<Vector2>();
-    }
-
-    public void OnJump(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            jumpRequested = true;
-        }
     }
 
     private void HandleMovement()
@@ -44,26 +51,30 @@ public sealed class PlayerController : MonoBehaviour
             transform.right * moveInput.x +
             transform.forward * moveInput.y;
 
-        characterController.Move(direction * moveSpeed * Time.deltaTime);
+        characterController.Move(
+            direction * moveSpeed * Time.deltaTime
+        );
     }
 
-    private void HandleJump()
+    private void Jump()
     {
-        if (characterController.isGrounded && velocity.y < 0f)
-        {
-            velocity.y = -2f;
-        }
-
-        if (jumpRequested && characterController.isGrounded)
+        if (characterController.isGrounded)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
-            jumpRequested = false;
         }
     }
 
     private void ApplyGravity()
     {
+        if (characterController.isGrounded && velocity.y < 0)
+        {
+            velocity.y = -2f;
+        }
+
         velocity.y += gravity * Time.deltaTime;
-        characterController.Move(velocity * Time.deltaTime);
+
+        characterController.Move(
+            velocity * Time.deltaTime
+        );
     }
 }
