@@ -119,11 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!4 &106046461 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8646385242694014881, guid: 2f4135f1fe75f87489c4100ab71ccdb8, type: 3}
-  m_PrefabInstance: {fileID: 6702645415769677953}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &122343667 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
@@ -324,6 +319,10 @@ PrefabInstance:
     - target: {fileID: 9150031363044323194, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: maxSize
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9150031363044323194, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
+      propertyPath: lifeTime
+      value: 84.64
       objectReference: {fileID: 0}
     - target: {fileID: 9150031363044323194, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: maxDistance
@@ -579,7 +578,7 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 1810631184}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
       propertyPath: m_LocalScale.x
@@ -595,15 +594,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 174.8538
+      value: 23.653809
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 12.03
+      value: -7.87
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 111.9
+      value: -32.299995
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1127,12 +1126,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27a22c1df07956d47a20ff91e1fbd035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Radar
-  player: {fileID: 1810631184}
-  radarCenter: {fileID: 106046461}
-  echoPrefab: {fileID: 112277523873346308, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
-  scanInterval: 2
-  detectionRange: 50
-  radarRadius: 4
+  player: {fileID: 1172792357}
+  target: {fileID: 328525959}
+  blip: {fileID: 122343667}
+  detectionRange: 1011.4
+  radarRadius: 0
+  minSize: 0.1
+  maxSize: 1
+  pulseSpeed: 2
 --- !u!4 &2053970252
 Transform:
   m_ObjectHideFlags: 0
@@ -1384,7 +1385,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1867666764259805249, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 233.30869
+      value: 211
       objectReference: {fileID: 0}
     - target: {fileID: 1867666764259805249, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1392,7 +1393,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1867666764259805249, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 448.83624
+      value: 242
       objectReference: {fileID: 0}
     - target: {fileID: 1867666764259805249, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1481,7 +1482,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7162998803424964529, guid: 2f4135f1fe75f87489c4100ab71ccdb8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1172792357}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2f4135f1fe75f87489c4100ab71ccdb8, type: 3}
 --- !u!1660057539 &9223372036854775807
@@ -1491,7 +1495,6 @@ SceneRoots:
   - {fileID: 1499888475}
   - {fileID: 1150183213}
   - {fileID: 1469853092}
-  - {fileID: 1172792356}
   - {fileID: 6702645415769677953}
   - {fileID: 1587813332383273596}
   - {fileID: 1425560898}

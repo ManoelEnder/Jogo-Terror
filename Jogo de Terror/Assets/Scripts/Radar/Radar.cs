@@ -5,10 +5,14 @@ public class Radar : MonoBehaviour
     [Header("Referências")]
     public Transform player;
     public Transform target;
-    public Transform blip;
+    public GameObject blipPrefab;
+
+    private Transform blipInstance;
+    private Renderer blipRenderer;
 
     [Header("Radar")]
     public float detectionRange = 50f;
+    public float contactRange = 5f;
     public float radarRadius = 4f;
 
     [Header("Visual")]
@@ -16,73 +20,84 @@ public class Radar : MonoBehaviour
     public float maxSize = 1f;
     public float pulseSpeed = 2f;
 
-    private MeshRenderer blipRenderer;
+    private bool detected;
+    private bool contacted;
 
     private void Start()
     {
-        blipRenderer = blip.GetComponent<MeshRenderer>();
+        GameObject obj = Instantiate(blipPrefab, transform);
+        blipInstance = obj.transform;
+
+        blipRenderer = obj.GetComponentInChildren<Renderer>();
 
         if (blipRenderer != null)
             blipRenderer.enabled = false;
     }
 
-    private void Update()
+   private void Update()
+{
+    if (player == null || target == null || blipInstance == null)
+        return;
+
+    Vector3 offset = target.position - player.position;
+    offset.y = 0f;  
+
+    float distance = offset.magnitude;
+
+    if (distance > detectionRange)
     {
-        if (player == null || target == null || blip == null)
-            return;
+        if (blipRenderer != null) blipRenderer.enabled = false;
+        detected = false;
+        contacted = false;
+        return;
+    }
 
-        Vector3 offset = target.position - player.position;
-        offset.y = 0f;
+    if (blipRenderer != null) blipRenderer.enabled = true;
 
-        float distance = offset.magnitude;
+    if (!detected && distance <= detectionRange) detected = true;
 
-        // Esconde se estiver fora do alcance
-        if (distance > detectionRange)
-        {
+    if (!contacted && distance <= contactRange)
+    {
+        contacted = true;
+        OnContact();
+    }
+
+    Vector2 dir = new Vector2(offset.x, offset.z);
+    if (dir.magnitude > 0.001f)
+        dir = dir.normalized;
+    else
+        dir = Vector2.zero;
+
+    float distanceRatio = distance / detectionRange;
+    float safeRadius = radarRadius * 0.85f;
+
+    Vector3 localPos = new Vector3(
+        dir.x * distanceRatio * safeRadius,
+        0.02f, 
+        dir.y * distanceRatio * safeRadius
+    );
+
+    blipInstance.localPosition = localPos;
+
+    float t = 1f - Mathf.Clamp01(distance / detectionRange);
+    float baseSize = Mathf.Lerp(minSize, maxSize, t);
+    float pulse = Mathf.PingPong(Time.time * pulseSpeed, 1f);
+    float finalSize = Mathf.Lerp(baseSize * 0.8f, baseSize * 1.2f, pulse);
+
+    Vector3 parentScale = transform.lossyScale;
+    blipInstance.localScale = new Vector3(
+        finalSize / parentScale.x,
+        finalSize / parentScale.y,
+        finalSize / parentScale.z
+    );
+}
+
+    private void OnContact()
+    {
+
+        blipInstance.localScale = Vector3.zero;
+
+        if (blipRenderer != null)
             blipRenderer.enabled = false;
-            return;
-        }
-
-        blipRenderer.enabled = true;
-
-        Vector2 radarPos =
-            Vector2.ClampMagnitude(
-                new Vector2(offset.x, offset.z)
-                / detectionRange
-                * radarRadius,
-                radarRadius
-            );
-
-        blip.localPosition = new Vector3(
-            radarPos.x,
-            0.1f,
-            radarPos.y
-        );
-
-        float t = 1f - Mathf.Clamp01(distance / detectionRange);
-
-        float baseSize = Mathf.Lerp(
-            minSize,
-            maxSize,
-            t
-        );
-
-        // Pulso
-        float pulse = Mathf.PingPong(
-            Time.time * pulseSpeed,
-            1f
-        );
-
-        float finalSize = Mathf.Lerp(
-            baseSize * 0.8f,
-            baseSize * 1.2f,
-            pulse
-        );
-
-        blip.localScale = new Vector3(
-            finalSize,
-            0.02f,
-            finalSize
-        );
     }
 }
