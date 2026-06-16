@@ -15,6 +15,7 @@ public sealed class KeyItem : MonoBehaviour
             inventory.AddKey();
             interactionText.SetActive(false);
             Destroy(gameObject);
+            Debug.Log(playerNear);
         }
     }
 
@@ -26,6 +27,7 @@ public sealed class KeyItem : MonoBehaviour
             playerNear = true;
 
             interactionText.SetActive(true);
+            Debug.Log("Entrou na chave");
         }
     }
 
