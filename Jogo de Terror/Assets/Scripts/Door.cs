@@ -1,33 +1,43 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
+using TMPro;
 
-public class Door : MonoBehaviour
+public sealed class Door : MonoBehaviour
 {
+    [SerializeField] private GameObject openText;
+    [SerializeField] private GameObject lockedText;
+
     [SerializeField] private float openAngle = 90f;
     [SerializeField] private float openSpeed = 3f;
 
+    private Inventory inventory;
     private bool playerNear;
-    private bool isOpen;
+    private bool opened;
 
-    private Quaternion closedRotation;
     private Quaternion openedRotation;
-    private Inventory playerInventory;
 
     private void Awake()
     {
-        closedRotation = transform.rotation;
         openedRotation = Quaternion.Euler(
             transform.eulerAngles + new Vector3(0, openAngle, 0)
         );
+
+        openText.SetActive(false);
+        lockedText.SetActive(false);
     }
 
     private void Update()
     {
-        if (playerNear && playerInventory.HasKey && Input.GetKeyDown(KeyCode.E))
+        if (!playerNear || inventory == null)
+            return;
+
+        if (Keyboard.current.eKey.wasPressedThisFrame && inventory.HasKey)
         {
-            isOpen = true;
+            opened = true;
+            openText.SetActive(false);
         }
 
-        if (isOpen)
+        if (opened)
         {
             transform.rotation = Quaternion.Lerp(
                 transform.rotation,
@@ -39,19 +49,31 @@ public class Door : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent(out Inventory inventory))
+        if (other.TryGetComponent(out Inventory playerInventory))
         {
+            inventory = playerInventory;
             playerNear = true;
-            playerInventory = inventory;
+
+            if (inventory.HasKey)
+            {
+                openText.SetActive(true);
+            }
+            else
+            {
+                lockedText.SetActive(true);
+            }
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.TryGetComponent(out Inventory inventory))
+        if (other.TryGetComponent(out Inventory playerInventory))
         {
             playerNear = false;
-            playerInventory = null;
+            inventory = null;
+
+            openText.SetActive(false);
+            lockedText.SetActive(false);
         }
     }
 }
