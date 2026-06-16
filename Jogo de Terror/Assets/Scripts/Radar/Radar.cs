@@ -2,55 +2,87 @@ using UnityEngine;
 
 public class Radar : MonoBehaviour
 {
-   public Transform player;
+    [Header("Referências")]
+    public Transform player;
+    public Transform target;
+    public Transform blip;
 
-    public Transform radarCenter;
-
-    public GameObject echoPrefab;
-
-    public float scanInterval = 2f;
-
+    [Header("Radar")]
     public float detectionRange = 50f;
-
     public float radarRadius = 4f;
 
-    private float timer;
+    [Header("Visual")]
+    public float minSize = 0.1f;
+    public float maxSize = 1f;
+    public float pulseSpeed = 2f;
+
+    private MeshRenderer blipRenderer;
+
+    private void Start()
+    {
+        blipRenderer = blip.GetComponent<MeshRenderer>();
+
+        if (blipRenderer != null)
+            blipRenderer.enabled = false;
+    }
 
     private void Update()
     {
-        timer += Time.deltaTime;
+        if (player == null || target == null || blip == null)
+            return;
 
-        if (timer >= scanInterval)
+        Vector3 offset = target.position - player.position;
+        offset.y = 0f;
+
+        float distance = offset.magnitude;
+
+        // Esconde se estiver fora do alcance
+        if (distance > detectionRange)
         {
-            timer = 0f;
-            Scan();
+            blipRenderer.enabled = false;
+            return;
         }
-    }
 
-    private void Scan()
-    {
-        foreach (RadarTarget target in RadarTarget.AllTargets)
-        {
-            if (target == null)
-                continue;
+        blipRenderer.enabled = true;
 
-            Vector3 offset =target.transform.position -player.position;
-
-            float distance = offset.magnitude;
-
-            if (distance > detectionRange)
-                continue;
-
-            offset.y = 0;
-
-            Vector2 radarPosition =
+        Vector2 radarPos =
+            Vector2.ClampMagnitude(
                 new Vector2(offset.x, offset.z)
                 / detectionRange
-                * radarRadius;
+                * radarRadius,
+                radarRadius
+            );
 
-            GameObject echo =Instantiate(echoPrefab,radarCenter);
+        blip.localPosition = new Vector3(
+            radarPos.x,
+            0.1f,
+            radarPos.y
+        );
 
-            echo.transform.localPosition =new Vector3(radarPosition.x,0f,radarPosition.y);      
-        }
+        float t = 1f - Mathf.Clamp01(distance / detectionRange);
+
+        float baseSize = Mathf.Lerp(
+            minSize,
+            maxSize,
+            t
+        );
+
+        // Pulso
+        float pulse = Mathf.PingPong(
+            Time.time * pulseSpeed,
+            1f
+        );
+
+        float finalSize = Mathf.Lerp(
+            baseSize * 0.8f,
+            baseSize * 1.2f,
+            pulse
+        );
+
+        blip.localScale = new Vector3(
+            finalSize,
+            0.02f,
+            finalSize
+        );
     }
 }

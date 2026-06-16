@@ -126,8 +126,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec03ac4ca448ffc4ea5eb6afeb869a9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RadarBlip
-  player: {fileID: 0}
-  target: {fileID: 0}
+  player: {fileID: 7162998803424964529, guid: 2f4135f1fe75f87489c4100ab71ccdb8, type: 3}
+  target: {fileID: 1867666764259805249, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
   maxDistance: 50
   minSize: 0.1
   maxSize: 1
+  pulseSpeed: 2

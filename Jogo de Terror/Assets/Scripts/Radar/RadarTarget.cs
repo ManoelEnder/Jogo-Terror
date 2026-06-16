@@ -1,24 +1,24 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class RadarTarget : MonoBehaviour
 {
-     [HideInInspector]public bool detected;
+    public bool detected;
+
     public static List<RadarTarget> AllTargets =
         new List<RadarTarget>();
 
-    void OnEnable()
+    private void OnEnable()
     {
         AllTargets.Add(this);
     }
 
-    void OnDisable()
+    private void OnDisable()
     {
         AllTargets.Remove(this);
- 
     }
 
-     private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
@@ -33,5 +33,4 @@ public class RadarTarget : MonoBehaviour
             detected = false;
         }
     }
-
 }
