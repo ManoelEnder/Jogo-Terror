@@ -1,23 +1,28 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public sealed class Interactor : MonoBehaviour
 {
-    [SerializeField] private float interactionDistance = 3f;
     [SerializeField] private Camera playerCamera;
+    [SerializeField] private float distance = 3f;
+    [SerializeField] private TMP_Text interactionText;
 
     private void Update()
     {
+        interactionText.gameObject.SetActive(false);
+
         Ray ray = new Ray(
             playerCamera.transform.position,
             playerCamera.transform.forward
         );
 
-        if (Physics.Raycast(ray, out RaycastHit hit, interactionDistance))
+        if (Physics.Raycast(ray, out RaycastHit hit, distance))
         {
             if (hit.collider.TryGetComponent(out IInteractable interactable))
             {
-                interactable.ShowText();
+                interactionText.gameObject.SetActive(true);
+                interactionText.text = interactable.GetInteractionText();
 
                 if (Keyboard.current.eKey.wasPressedThisFrame)
                 {
