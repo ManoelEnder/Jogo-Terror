@@ -9,33 +9,30 @@ public class Radar : MonoBehaviour
 
     [Header("Radar")]
     public float detectionRange = 50f;
-    public float radarRadius = 0.8f;
+    public float radarRadius = 1f;
 
     [Header("Visual")]
     public float minSize = 0.05f;
     public float maxSize = 0.15f;
     public float pulseSpeed = 2f;
 
+    [Header("Animação")]
+    public float moveSpeed = 3f;
+    public float scaleSpeed = 5f;
+
     private Renderer blipRenderer;
+    private bool wasVisible;
 
     private void Start()
     {
-        Debug.Log("RADAR NOVO CARREGADO");
-        if (player == null)
-        {
-            Debug.LogError("Player não atribuído!");
-            return;
-        }
+        Debug.Log("ENTROU NO ALCANCE");
 
-        if (target == null)
+        blip.localScale = Vector3.zero;
+        blipRenderer.enabled = false;
+        if (player == null || target == null || blip == null)
         {
-            Debug.LogError("Target não atribuído!");
-            return;
-        }
-
-        if (blip == null)
-        {
-            Debug.LogError("Blip não atribuído!");
+            Debug.LogError("Radar não configurado!");
+            enabled = false;
             return;
         }
 
@@ -46,47 +43,99 @@ public class Radar : MonoBehaviour
 
         if (blipRenderer == null)
         {
-            Debug.LogError("Nenhum Renderer encontrado no Blip!");
+            Debug.LogError("Renderer não encontrado no Blip!");
+            enabled = false;
             return;
         }
 
-        blipRenderer.enabled = true;
-
-        blip.localPosition = new Vector3(0f, 0.05f, 0f);
+        blip.localPosition = Vector3.zero;
+        blip.localScale = Vector3.zero;
+        blipRenderer.enabled = false;
     }
 
     private void Update()
-{
-    if (player == null || target == null || blip == null)
-        return;
-
-    Vector3 offset = target.position - player.position;
-    offset.y = 0f;
-
-    float distance = offset.magnitude;
-
-    if (distance > detectionRange)
     {
-        blipRenderer.enabled = false;
-        return;
+        Vector3 offset =
+            Quaternion.Inverse(player.rotation) *
+            (target.position - player.position);
+
+        offset.y = 0f;
+
+        float distance = offset.magnitude;
+
+        if (distance > detectionRange)
+        {
+            blipRenderer.enabled = false;
+            wasVisible = false;
+            return;
+        }
+
+        if (!wasVisible)
+        {
+            wasVisible = true;
+
+            blip.localPosition = Vector3.zero;
+            blip.localScale = Vector3.zero;
+
+            blipRenderer.enabled = true;
+        }
+
+        Vector2 radarPos =
+            new Vector2(offset.x, offset.z)
+            / detectionRange
+            * radarRadius;
+
+        radarPos = Vector2.ClampMagnitude(
+            radarPos,
+            radarRadius
+        );
+
+        Vector3 targetPosition = new Vector3(
+            radarPos.x,
+            0.05f,
+            radarPos.y
+        );
+
+        // Movimento suave
+        blip.localPosition = Vector3.Lerp(
+            blip.localPosition,
+            targetPosition,
+            Time.deltaTime * moveSpeed
+        );
+
+        // Escala pela distância
+        float t =
+            1f - Mathf.Clamp01(
+                distance / detectionRange
+            );
+
+        float baseSize =
+            Mathf.Lerp(
+                minSize,
+                maxSize,
+                t
+            );
+
+        float pulse =
+            Mathf.PingPong(
+                Time.time * pulseSpeed,
+                1f
+            );
+
+        float finalSize =
+            Mathf.Lerp(
+                baseSize * 0.8f,
+                baseSize * 1.2f,
+                pulse
+            );
+
+        Vector3 desiredScale =
+            Vector3.one * finalSize;
+
+        blip.localScale = Vector3.Lerp(
+            blip.localScale,
+            desiredScale,
+            Time.deltaTime * scaleSpeed
+        );
     }
-
-    blipRenderer.enabled = true;
-
-    Vector2 radarPos =
-        new Vector2(offset.x, offset.z);
-
-    radarPos = Vector2.ClampMagnitude(
-        radarPos,
-        radarRadius
-    );
-
-    blip.localPosition = new Vector3(
-        radarPos.x,
-        0.05f,
-        radarPos.y
-    );
-
-    Debug.Log("RadarPos: " + radarPos);
-}
 }
