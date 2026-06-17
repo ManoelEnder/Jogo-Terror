@@ -1,42 +1,22 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public sealed class KeyItem : MonoBehaviour
+public sealed class KeyItem : MonoBehaviour, IInteractable
 {
-    [SerializeField] private GameObject interactionText;
-
     private Inventory inventory;
-    private bool playerNear;
 
-    private void Update()
+    private void Awake()
     {
-        if (playerNear && Keyboard.current.eKey.wasPressedThisFrame)
-        {
-            inventory.AddKey();
-            interactionText.SetActive(false);
-            Destroy(gameObject);
-            Debug.Log(playerNear);
-        }
+        inventory = FindFirstObjectByType<Inventory>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void Interact()
     {
-        if (other.TryGetComponent(out Inventory playerInventory))
-        {
-            inventory = playerInventory;
-            playerNear = true;
-
-            interactionText.SetActive(true);
-            Debug.Log("Entrou na chave");
-        }
+        inventory.AddKey();
+        Destroy(gameObject);
     }
 
-    private void OnTriggerExit(Collider other)
+    public string GetInteractionText()
     {
-        if (other.TryGetComponent(out Inventory playerInventory))
-        {
-            playerNear = false;
-            interactionText.SetActive(false);
-        }
+        return "E para coletar";
     }
 }
