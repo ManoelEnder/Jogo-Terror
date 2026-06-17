@@ -5,99 +5,88 @@ public class Radar : MonoBehaviour
     [Header("Referências")]
     public Transform player;
     public Transform target;
-    public GameObject blipPrefab;
-
-    private Transform blipInstance;
-    private Renderer blipRenderer;
+    public Transform blip;
 
     [Header("Radar")]
     public float detectionRange = 50f;
-    public float contactRange = 5f;
-    public float radarRadius = 4f;
+    public float radarRadius = 0.8f;
 
     [Header("Visual")]
-    public float minSize = 0.1f;
-    public float maxSize = 1f;
+    public float minSize = 0.05f;
+    public float maxSize = 0.15f;
     public float pulseSpeed = 2f;
 
-    private bool detected;
-    private bool contacted;
+    private Renderer blipRenderer;
 
     private void Start()
     {
-        GameObject obj = Instantiate(blipPrefab, transform);
-        blipInstance = obj.transform;
+        Debug.Log("RADAR NOVO CARREGADO");
+        if (player == null)
+        {
+            Debug.LogError("Player não atribuído!");
+            return;
+        }
 
-        blipRenderer = obj.GetComponentInChildren<Renderer>();
+        if (target == null)
+        {
+            Debug.LogError("Target não atribuído!");
+            return;
+        }
 
-        if (blipRenderer != null)
-            blipRenderer.enabled = false;
+        if (blip == null)
+        {
+            Debug.LogError("Blip não atribuído!");
+            return;
+        }
+
+        blipRenderer = blip.GetComponent<Renderer>();
+
+        if (blipRenderer == null)
+            blipRenderer = blip.GetComponentInChildren<Renderer>();
+
+        if (blipRenderer == null)
+        {
+            Debug.LogError("Nenhum Renderer encontrado no Blip!");
+            return;
+        }
+
+        blipRenderer.enabled = true;
+
+        blip.localPosition = new Vector3(0f, 0.05f, 0f);
     }
 
-   private void Update()
+    private void Update()
 {
-    if (player == null || target == null || blipInstance == null)
+    if (player == null || target == null || blip == null)
         return;
 
     Vector3 offset = target.position - player.position;
-    offset.y = 0f;  
+    offset.y = 0f;
 
     float distance = offset.magnitude;
 
     if (distance > detectionRange)
     {
-        if (blipRenderer != null) blipRenderer.enabled = false;
-        detected = false;
-        contacted = false;
+        blipRenderer.enabled = false;
         return;
     }
 
-    if (blipRenderer != null) blipRenderer.enabled = true;
+    blipRenderer.enabled = true;
 
-    if (!detected && distance <= detectionRange) detected = true;
+    Vector2 radarPos =
+        new Vector2(offset.x, offset.z);
 
-    if (!contacted && distance <= contactRange)
-    {
-        contacted = true;
-        OnContact();
-    }
-
-    Vector2 dir = new Vector2(offset.x, offset.z);
-    if (dir.magnitude > 0.001f)
-        dir = dir.normalized;
-    else
-        dir = Vector2.zero;
-
-    float distanceRatio = distance / detectionRange;
-    float safeRadius = radarRadius * 0.85f;
-
-    Vector3 localPos = new Vector3(
-        dir.x * distanceRatio * safeRadius,
-        0.02f, 
-        dir.y * distanceRatio * safeRadius
+    radarPos = Vector2.ClampMagnitude(
+        radarPos,
+        radarRadius
     );
 
-    blipInstance.localPosition = localPos;
-
-    float t = 1f - Mathf.Clamp01(distance / detectionRange);
-    float baseSize = Mathf.Lerp(minSize, maxSize, t);
-    float pulse = Mathf.PingPong(Time.time * pulseSpeed, 1f);
-    float finalSize = Mathf.Lerp(baseSize * 0.8f, baseSize * 1.2f, pulse);
-
-    Vector3 parentScale = transform.lossyScale;
-    blipInstance.localScale = new Vector3(
-        finalSize / parentScale.x,
-        finalSize / parentScale.y,
-        finalSize / parentScale.z
+    blip.localPosition = new Vector3(
+        radarPos.x,
+        0.05f,
+        radarPos.y
     );
+
+    Debug.Log("RadarPos: " + radarPos);
 }
-
-    private void OnContact()
-    {
-
-        blipInstance.localScale = Vector3.zero;
-
-        if (blipRenderer != null)
-            blipRenderer.enabled = false;
-    }
 }
