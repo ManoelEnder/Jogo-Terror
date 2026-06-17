@@ -246,23 +246,27 @@ PrefabInstance:
   serializedVersion: 2
   m_Modification:
     serializedVersion: 3
-    m_TransformParent: {fileID: 1172792357}
+    m_TransformParent: {fileID: 2053970252}
     m_Modifications:
     - target: {fileID: 112277523873346308, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_Name
       value: RadarBlip
       objectReference: {fileID: 0}
+    - target: {fileID: 112277523873346308, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.15
+      value: 1.8241857
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.05
+      value: 0.6080621
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.15
+      value: 1.8241863
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -270,11 +274,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.05
+      value: 0.6080619
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 6.666667
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -454,11 +458,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 630496826}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &667869572 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 112277523873346308, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
-  m_PrefabInstance: {fileID: 355939512}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1150183211
 GameObject:
   m_ObjectHideFlags: 0
@@ -656,9 +655,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
       insertIndex: -1
       addedObject: {fileID: 630496827}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 122343667}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6cfba3d15a39de644a698b8f410314ea, type: 3}
 --- !u!4 &1172792357 stripped
@@ -1187,10 +1183,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Radar
   player: {fileID: 1810631184}
   target: {fileID: 328525959}
-  blipPrefab: {fileID: 667869572}
-  detectionRange: 50
-  contactRange: 1
-  radarRadius: 5
+  blip: {fileID: 122343667}
+  detectionRange: 349.1
+  radarRadius: 0
   minSize: 0.1
   maxSize: 1
   pulseSpeed: 2
@@ -1203,10 +1198,11 @@ Transform:
   m_GameObject: {fileID: 2053970250}
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: 1, y: -1, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 122343667}
   m_Father: {fileID: 583832326}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2055100915
