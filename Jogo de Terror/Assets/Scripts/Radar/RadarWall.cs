@@ -13,44 +13,63 @@ public class RadarWall : MonoBehaviour
     public float detectionRange = 50f;
     public float radarRadius = 1f;
 
+    [Header("Visual")]
+    public float blipSize = 2f;
+
     [Header("Animação")]
-    public float moveSpeed = 3f;
-    public float scaleSpeed = 5f;
+    public float moveSpeed = 5f;
+    public float scaleSpeed = 8f;
 
     private Transform wallBlip;
     private Renderer wallRenderer;
     private bool wasVisible;
 
-    private void Start()
-{
-    GameObject obj = Instantiate(
-        blipPrefab,
-        radar
-    );
-
-    wallBlip = obj.transform;
-    wallRenderer = wallBlip.GetComponentInChildren<Renderer>();
-    Debug.Log(wallRenderer);
-
-
-    if (wallRenderer == null)
-        wallRenderer = wallBlip.GetComponentInChildren<Renderer>();
-
-    if (wallRenderer == null)
+    void Start()
     {
-        Debug.LogError("Renderer não encontrado no prefab!");
-        return;
+        Debug.Log("INICIANDO RADAR WALL -> " + gameObject.name);
+
+        if (player == null)
+        {
+            Debug.LogError(gameObject.name + " PLAYER NÃO DEFINIDO");
+            return;
+        }
+
+        if (radar == null)
+        {
+            Debug.LogError(gameObject.name + " RADAR NÃO DEFINIDO");
+            return;
+        }
+
+        if (blipPrefab == null)
+        {
+            Debug.LogError(gameObject.name + " BLIP PREFAB NÃO DEFINIDO");
+            return;
+        }
+
+        GameObject obj = Instantiate(blipPrefab, radar);
+
+        wallBlip = obj.transform;
+
+        wallRenderer = wallBlip.GetComponent<Renderer>();
+
+        if (wallRenderer == null)
+            wallRenderer = wallBlip.GetComponentInChildren<Renderer>(true);
+
+        Debug.Log(
+            gameObject.name +
+            " Renderer encontrado: " +
+            wallRenderer
+        );
+
+        wallBlip.localPosition = Vector3.zero;
+        wallBlip.localScale = Vector3.zero;
+
+        if (wallRenderer != null)
+            wallRenderer.enabled = false;
     }
 
-    wallBlip.localPosition = Vector3.zero;
-    wallBlip.localScale = Vector3.zero;
-
-    wallRenderer.enabled = false;
-}
-
-    private void Update()
+    void Update()
     {
-      
         if (player == null ||
             radar == null ||
             wallBlip == null)
@@ -64,21 +83,32 @@ public class RadarWall : MonoBehaviour
 
         float distance = offset.magnitude;
 
+      
+
         if (distance > detectionRange)
         {
+            if (wasVisible)
+            {
+            }
+
+            wasVisible = false;
+
             if (wallRenderer != null)
                 wallRenderer.enabled = false;
 
-            wasVisible = false;
+            wallBlip.localScale = Vector3.zero;
+
             return;
         }
 
         if (!wasVisible)
         {
-            wasVisible = true;
+            Debug.Log(
+                gameObject.name +
+                " ENTROU NO ALCANCE"
+            );
 
-            wallBlip.localPosition = Vector3.zero;
-            wallBlip.localScale = Vector3.zero;
+            wasVisible = true;
 
             if (wallRenderer != null)
                 wallRenderer.enabled = true;
@@ -94,11 +124,12 @@ public class RadarWall : MonoBehaviour
             radarRadius
         );
 
-        Vector3 targetPos = new Vector3(
-            radarPos.x,
-            0.05f,
-            radarPos.y
-        );
+        Vector3 targetPos =
+            new Vector3(
+                radarPos.x,
+                0.05f,
+                radarPos.y
+            );
 
         wallBlip.localPosition = Vector3.Lerp(
             wallBlip.localPosition,
@@ -106,14 +137,9 @@ public class RadarWall : MonoBehaviour
             Time.deltaTime * moveSpeed
         );
 
-        Vector3 desiredScale =
-            Vector3.one * 0.08f;
-
-        wallBlip.localScale = Vector3.Lerp(
-            wallBlip.localScale,
-            desiredScale,
-            Time.deltaTime * scaleSpeed
-        );
+        wallBlip.localScale = Vector3.one * 0.5f;
+        Debug.Log("LOCAL SCALE = " + wallBlip.localScale);
+        Debug.Log("LOSSY SCALE = " + wallBlip.lossyScale);
     }
 
     private void OnDestroy()

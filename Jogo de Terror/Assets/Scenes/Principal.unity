@@ -253,6 +253,9 @@ MonoBehaviour:
   blipPrefab: {fileID: 671193642}
   detectionRange: 50
   radarRadius: 1
+  blipSize: 2
+  moveSpeed: 3
+  scaleSpeed: 5
 --- !u!4 &328525959 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1867666764259805249, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
@@ -272,7 +275,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 112277523873346308, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalScale.x
@@ -498,15 +501,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.8241857
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.6080621
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.8241863
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -514,11 +517,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6080619
+      value: 0.6080627
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 6.666667
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 194780337545805569, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_LocalRotation.w
@@ -558,7 +561,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5245816029910815245, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9150031363044323194, guid: 3f3662b7c78161e4c94f33d806cfb0d7, type: 3}
       propertyPath: player
@@ -1024,6 +1027,9 @@ MonoBehaviour:
   blipPrefab: {fileID: 671193642}
   detectionRange: 50
   radarRadius: 1
+  blipSize: 2
+  moveSpeed: 3
+  scaleSpeed: 5
 --- !u!1 &1469853091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1350,8 +1356,11 @@ MonoBehaviour:
   player: {fileID: 1810631184}
   radar: {fileID: 2053970252}
   blipPrefab: {fileID: 671193642}
-  detectionRange: 50
+  detectionRange: 50000
   radarRadius: 1
+  blipSize: 2
+  moveSpeed: 3
+  scaleSpeed: 5
 --- !u!1 &2053970250
 GameObject:
   m_ObjectHideFlags: 0
@@ -1386,9 +1395,11 @@ MonoBehaviour:
   blip: {fileID: 122343667}
   detectionRange: 1073.5
   radarRadius: 2
-  minSize: 0.1
-  maxSize: 1
+  minSize: 5
+  maxSize: 6
   pulseSpeed: 2
+  moveSpeed: 3
+  scaleSpeed: 5
 --- !u!4 &2053970252
 Transform:
   m_ObjectHideFlags: 0
@@ -1399,7 +1410,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 1, y: 0, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 122343667}
@@ -1513,7 +1524,10 @@ MonoBehaviour:
   radar: {fileID: 2053970252}
   blipPrefab: {fileID: 671193642}
   detectionRange: 50
-  radarRadius: 1
+  radarRadius: 1.14
+  blipSize: 2
+  moveSpeed: 3
+  scaleSpeed: 5
 --- !u!64 &2055100921
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1665,6 +1679,9 @@ MonoBehaviour:
   blipPrefab: {fileID: 671193642}
   detectionRange: 50
   radarRadius: 1
+  blipSize: 2
+  moveSpeed: 3
+  scaleSpeed: 5
 --- !u!1001 &1587813332383273596
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1679,7 +1696,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1342241645456921339, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1867666764259805249, guid: da8b9e28a2ed0624d887cd21e4b30d4e, type: 3}
       propertyPath: m_LocalPosition.x

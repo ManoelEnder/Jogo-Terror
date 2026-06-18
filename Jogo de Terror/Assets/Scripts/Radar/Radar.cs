@@ -25,40 +25,35 @@ public class Radar : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("ENTROU NO ALCANCE");
+        Debug.Log("Player = " + player);
+Debug.Log("Target = " + target);
+Debug.Log("Blip = " + blip);
+        
+  blipRenderer = blip.GetComponent<Renderer>();
 
-        blip.localScale = Vector3.zero;
-        blipRenderer.enabled = false;
-        if (player == null || target == null || blip == null)
-        {
-            Debug.LogError("Radar não configurado!");
-            enabled = false;
-            return;
-        }
+if (blipRenderer == null)
+    blipRenderer = blip.GetComponentInChildren<Renderer>();
 
-        blipRenderer = blip.GetComponent<Renderer>();
+if (blipRenderer == null)
+{
+    Debug.LogError("Renderer não encontrado no Blip!");
+    enabled = false;
+    return;
+}
 
-        if (blipRenderer == null)
-            blipRenderer = blip.GetComponentInChildren<Renderer>();
+    blip.localPosition = Vector3.zero;
+    blip.localScale = Vector3.zero;
+    blipRenderer.enabled = false;
+}
 
-        if (blipRenderer == null)
-        {
-            Debug.LogError("Renderer não encontrado no Blip!");
-            enabled = false;
-            return;
-        }
+private void Update()
+{
+    if (player == null || target == null || blip == null)
+        return;
 
-        blip.localPosition = Vector3.zero;
-        blip.localScale = Vector3.zero;
-        blipRenderer.enabled = false;
-    }
-
-    private void Update()
-    {
-        Vector3 offset =
-            Quaternion.Inverse(player.rotation) *
-            (target.position - player.position);
-
+    Vector3 offset =
+        Quaternion.Inverse(player.rotation) *
+        (target.position - player.position);
         offset.y = 0f;
 
         float distance = offset.magnitude;
