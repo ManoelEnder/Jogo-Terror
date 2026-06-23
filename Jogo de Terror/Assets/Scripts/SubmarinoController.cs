@@ -12,25 +12,35 @@ public class SubmarinoController : MonoBehaviour
     [Header("Rotação")]
     public float turnSpeed = 50f;
 
+    [Header("Profundidade")]
+    public float verticalSpeed = 3f;
+
     private Rigidbody rb;
     private float currentSpeed;
+    private float verticalInput;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+
+        rb.useGravity = false;
+
+        rb.constraints =
+            RigidbodyConstraints.FreezeRotationX |
+            RigidbodyConstraints.FreezeRotationZ;
     }
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.W))
-        {
-            currentSpeed += acceleration * Time.deltaTime;
-        }
+        float moveInput = Input.GetAxis("Vertical");
+        float turnInput = Input.GetAxis("Horizontal");
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            currentSpeed -= reverseAcceleration * Time.deltaTime;
-        }
+        // Frente / Ré
+        if (moveInput > 0)
+            currentSpeed += acceleration * moveInput * Time.deltaTime;
+
+        if (moveInput < 0)
+            currentSpeed += reverseAcceleration * moveInput * Time.deltaTime;
 
         currentSpeed = Mathf.Clamp(
             currentSpeed,
@@ -38,27 +48,36 @@ public class SubmarinoController : MonoBehaviour
             maxSpeed
         );
 
+        // Rotação
         if (Mathf.Abs(currentSpeed) > 0.1f)
         {
-            float turnInput = 0f;
-
-            if (Input.GetKey(KeyCode.A))
-                turnInput = -1f;
-
-            if (Input.GetKey(KeyCode.D))
-                turnInput = 1f;
-
             transform.Rotate(
                 Vector3.up,
                 turnInput * turnSpeed * Time.deltaTime
             );
         }
+
+        // Subir / Descer
+        verticalInput = 0f;
+
+        if (Input.GetKey(KeyCode.Space))
+            verticalInput = 1f;
+
+        if (Input.GetKey(KeyCode.LeftControl))
+            verticalInput = -1f;
     }
 
     private void FixedUpdate()
     {
-        rb.linearVelocity =
+        Vector3 horizontalVelocity =
             transform.forward * currentSpeed;
+
+        Vector3 verticalVelocity =
+            Vector3.up * verticalInput * verticalSpeed;
+
+        rb.linearVelocity =
+            horizontalVelocity +
+            verticalVelocity;
 
         currentSpeed *= drag;
     }
