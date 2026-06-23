@@ -18,9 +18,11 @@ public class SubmarinoController : MonoBehaviour
     private Rigidbody rb;
     private float currentSpeed;
     private float verticalInput;
+    private SubmarineHealth health;
 
     private void Awake()
     {
+        health = GetComponent<SubmarineHealth>();
         rb = GetComponent<Rigidbody>();
 
         rb.useGravity = false;
@@ -85,5 +87,16 @@ public class SubmarinoController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log("Bateu em: " + collision.gameObject.name);
+
+        if (collision.gameObject.CompareTag("Wall"))
+        {
+            if (health != null)
+            {
+                health.TakeDamage(10f);
+            }
+
+            Debug.Log("Bateu na parede");
+        }
     }
+}
 }

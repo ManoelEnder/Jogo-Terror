@@ -43,7 +43,7 @@ Material:
     m_Floats:
     - _BumpScale: 1
     - _Glossiness: 0.058
-    - _Smoothness: 0.058
+    - _Smoothness: 0
     m_Colors:
     - _SpecColor: {r: 0.16911763, g: 0.16911763, b: 0.16911763, a: 1}
   m_BuildTextureStacks: []
