@@ -1,6 +1,6 @@
 using UnityEngine;
-using DG.Tweening;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class SubmarineHealth : MonoBehaviour
 {
@@ -14,8 +14,7 @@ public class SubmarineHealth : MonoBehaviour
     {
         currentHealth = maxHealth;
 
-        if (healthFill != null)
-            healthFill.fillAmount = 1f;
+        healthFill.fillAmount = 1f;
     }
 
     public void TakeDamage(float damage)
@@ -30,20 +29,12 @@ public class SubmarineHealth : MonoBehaviour
 
         healthFill.DOFillAmount(
             currentHealth / maxHealth,
-            0.25f
-        );
-
-        transform.DOShakePosition(
-            0.2f,
-            0.2f
+            0.3f
         );
 
         if (currentHealth <= 0)
-            Die();
-    }
-
-    void Die()
-    {
-        Debug.Log("Submarino destruído!");
+        {
+            Debug.Log("Morreu");
+        }
     }
 }
