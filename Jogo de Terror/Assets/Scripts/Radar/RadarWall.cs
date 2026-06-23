@@ -10,39 +10,39 @@ public class RadarWall : MonoBehaviour
     public GameObject blipPrefab;
 
     [Header("Config")]
-    public float detectionRange = 50f;
+    public float detectionRange = 10f;
     public float radarRadius = 1f;
 
     [Header("Visual")]
-    public float blipSize = 2f;
+    public float blipSize = 0.5f;
 
     [Header("Animação")]
     public float moveSpeed = 5f;
-    public float scaleSpeed = 8f;
 
     private Transform wallBlip;
     private Renderer wallRenderer;
-    private bool wasVisible;
+    private bool isVisible;
 
-    void Start()
+    private void Start()
     {
-        Debug.Log("INICIANDO RADAR WALL -> " + gameObject.name);
-
         if (player == null)
         {
-            Debug.LogError(gameObject.name + " PLAYER NÃO DEFINIDO");
+            Debug.LogError("PLAYER NÃO DEFINIDO EM " + gameObject.name);
+            enabled = false;
             return;
         }
 
         if (radar == null)
         {
-            Debug.LogError(gameObject.name + " RADAR NÃO DEFINIDO");
+            Debug.LogError("RADAR NÃO DEFINIDO EM " + gameObject.name);
+            enabled = false;
             return;
         }
 
         if (blipPrefab == null)
         {
-            Debug.LogError(gameObject.name + " BLIP PREFAB NÃO DEFINIDO");
+            Debug.LogError("BLIP PREFAB NÃO DEFINIDO EM " + gameObject.name);
+            enabled = false;
             return;
         }
 
@@ -50,30 +50,76 @@ public class RadarWall : MonoBehaviour
 
         wallBlip = obj.transform;
 
-        wallRenderer = wallBlip.GetComponent<Renderer>();
+        wallRenderer =
+            wallBlip.GetComponentInChildren<Renderer>(true);
 
         if (wallRenderer == null)
-            wallRenderer = wallBlip.GetComponentInChildren<Renderer>(true);
+        {
+            Debug.LogError("Renderer não encontrado!");
+            enabled = false;
+            return;
+        }
+
+        wallBlip.localPosition = Vector3.zero;
+        wallBlip.localScale = Vector3.one * blipSize;
+
+        wallRenderer.enabled = false;
+
+        Debug.Log("RadarWall iniciado: " + gameObject.name);
+    }
+
+    private void Update()
+    {
+        if (wallBlip == null || player == null)
+            return;
+
+        float distance = Vector3.Distance(
+     player.position,
+     transform.position
+ );
+
+        if (gameObject.name == "Parede1")
+        {
+            Debug.Log(
+                "Parede1 Distância = " +
+                distance
+            );
+        }
 
         Debug.Log(
             gameObject.name +
-            " Renderer encontrado: " +
-            wallRenderer
+            " | Distância = " +
+            distance +
+            " | Range = " +
+            detectionRange
         );
 
-        wallBlip.localPosition = Vector3.zero;
-        wallBlip.localScale = Vector3.zero;
+        if (distance > detectionRange)
+        {
+            if (isVisible)
+            {
+                Debug.Log(
+                    gameObject.name +
+                    " FORA DO ALCANCE"
+                );
 
-        if (wallRenderer != null)
-            wallRenderer.enabled = false;
-    }
+                isVisible = false;
+                wallRenderer.enabled = false;
+            }
 
-    void Update()
-    {
-        if (player == null ||
-            radar == null ||
-            wallBlip == null)
             return;
+        }
+
+        if (!isVisible)
+        {
+            Debug.Log(
+                gameObject.name +
+                " ENTROU NO ALCANCE"
+            );
+
+            isVisible = true;
+            wallRenderer.enabled = true;
+        }
 
         Vector3 offset =
             Quaternion.Inverse(player.rotation) *
@@ -81,48 +127,16 @@ public class RadarWall : MonoBehaviour
 
         offset.y = 0f;
 
-        float distance = offset.magnitude;
-
-      
-
-        if (distance > detectionRange)
-        {
-            if (wasVisible)
-            {
-            }
-
-            wasVisible = false;
-
-            if (wallRenderer != null)
-                wallRenderer.enabled = false;
-
-            wallBlip.localScale = Vector3.zero;
-
-            return;
-        }
-
-        if (!wasVisible)
-        {
-            Debug.Log(
-                gameObject.name +
-                " ENTROU NO ALCANCE"
-            );
-
-            wasVisible = true;
-
-            if (wallRenderer != null)
-                wallRenderer.enabled = true;
-        }
-
         Vector2 radarPos =
             new Vector2(offset.x, offset.z)
             / detectionRange
             * radarRadius;
 
-        radarPos = Vector2.ClampMagnitude(
-            radarPos,
-            radarRadius
-        );
+        radarPos =
+            Vector2.ClampMagnitude(
+                radarPos,
+                radarRadius
+            );
 
         Vector3 targetPos =
             new Vector3(
@@ -131,15 +145,15 @@ public class RadarWall : MonoBehaviour
                 radarPos.y
             );
 
-        wallBlip.localPosition = Vector3.Lerp(
-            wallBlip.localPosition,
-            targetPos,
-            Time.deltaTime * moveSpeed
-        );
+        wallBlip.localPosition =
+            Vector3.Lerp(
+                wallBlip.localPosition,
+                targetPos,
+                Time.deltaTime * moveSpeed
+            );
 
-        wallBlip.localScale = Vector3.one * 0.5f;
-        Debug.Log("LOCAL SCALE = " + wallBlip.localScale);
-        Debug.Log("LOSSY SCALE = " + wallBlip.lossyScale);
+        wallBlip.localScale =
+            Vector3.one * blipSize;
     }
 
     private void OnDestroy()
