@@ -2,10 +2,9 @@ using UnityEngine;
 
 public sealed class Inventory : MonoBehaviour
 {
-    [SerializeField]public bool HasKey { get; private set; }
-    [SerializeField]
-    
+    public bool HasKey { get; private set; }
     public bool HasFireExtinguisher { get; private set; }
+    public bool HasCamera { get; private set; }
 
     public void AddKey()
     {
@@ -15,5 +14,10 @@ public sealed class Inventory : MonoBehaviour
     public void AddFireExtinguisher()
     {
         HasFireExtinguisher = true;
+    }
+
+    public void AddCamera()
+    {
+        HasCamera = true;
     }
 }

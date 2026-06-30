@@ -59,6 +59,7 @@ public class PlayerInteractor : MonoBehaviour
 
             currentInteractable =
                 hit.collider.GetComponentInParent<IInteractable>();
+            Debug.Log("Interactable: " + currentInteractable);
 
             if (currentInteractable != null)
             {
