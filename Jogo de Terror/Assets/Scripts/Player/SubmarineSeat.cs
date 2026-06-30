@@ -3,11 +3,19 @@ using StarterAssets;
 
 public class SubmarineSeat : MonoBehaviour
 {
-    private FirstPersonController playerController;
+    [Header("Referências")]
     public Transform exitPoint;
+    public Transform outsidePoint;
+
     public GameObject player;
     public GameObject submarine;
 
+    [Header("Câmeras")]
+    public Camera playerCamera;
+    public Camera submarineCamera;
+
+    private FirstPersonController playerController;
+    private CharacterController characterController;
     private SubmarinoController submarineController;
 
     private bool playerInside;
@@ -15,23 +23,23 @@ public class SubmarineSeat : MonoBehaviour
 
     private void Start()
     {
-    {
-            playerController =player.GetComponent<FirstPersonController>();
+        playerController =
+            player.GetComponentInChildren<FirstPersonController>();
 
-            if (playerController == null)
-            {
-                playerController =
-                    player.GetComponentInChildren<FirstPersonController>();
-            }
-            submarineController = submarine.GetComponent<SubmarinoController>();
+        characterController =
+            player.GetComponentInChildren<CharacterController>();
 
-        Debug.Log("PlayerController = " + playerController);
-        Debug.Log("SubmarinoController = " + submarineController);
+        submarineController =
+            submarine.GetComponent<SubmarinoController>();
+
+        if (playerCamera != null)
+            playerCamera.enabled = true;
+
+        if (submarineCamera != null)
+            submarineCamera.enabled = false;
 
         if (submarineController != null)
             submarineController.enabled = false;
-    }
-
     }
 
     private void Update()
@@ -52,11 +60,26 @@ public class SubmarineSeat : MonoBehaviour
     {
         controllingSubmarine = true;
 
-        playerController.enabled = false;
-        submarineController.enabled = true;
+        player.transform.SetParent(exitPoint);
+        player.transform.localPosition = Vector3.zero;
+        player.transform.localRotation = Quaternion.identity;
 
-        player.transform.SetParent(submarine.transform);
-        player.SetActive(false);
+        if (characterController != null)
+            characterController.enabled = false;
+
+        if (playerController != null)
+            playerController.enabled = false;
+
+        if (playerCamera != null)
+            playerCamera.enabled = false;
+
+        if (submarineCamera != null)
+            submarineCamera.enabled = true;
+
+        if (submarineController != null)
+            submarineController.enabled = true;
+
+        Debug.Log("Entrou no submarino");
     }
 
     private void ExitSubmarine()
@@ -64,23 +87,36 @@ public class SubmarineSeat : MonoBehaviour
         controllingSubmarine = false;
 
         submarineController.enabled = false;
-        playerController.enabled = true;
 
         player.transform.SetParent(null);
-        player.transform.position = exitPoint.position;
 
-        player.SetActive(true);
+        player.transform.position = outsidePoint.position;
+        player.transform.rotation = outsidePoint.rotation;
+
+        characterController.enabled = true;
+        playerController.enabled = true;
+
+        playerController.ResetMovement();
+
+        playerCamera.enabled = true;
+        submarineCamera.enabled = false;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInside = true;
+            Debug.Log("Player perto do volante");
+        }
     }
 
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
+        {
             playerInside = false;
+            Debug.Log("Player saiu do volante");
+        }
     }
 }
