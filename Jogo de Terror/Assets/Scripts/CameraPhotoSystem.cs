@@ -3,11 +3,8 @@ using UnityEngine.UI;
 using DG.Tweening;
 using System.Collections;
 
-public class CameraPhotoSystem : MonoBehaviour
+public class CameraPhotoSystem : MonoBehaviour, IInteractable
 {
-    [Header("Inventário")]
-    public Inventory inventory;
-
     [Header("Inimigo")]
     public EnemyAI enemy;
 
@@ -24,59 +21,80 @@ public class CameraPhotoSystem : MonoBehaviour
     public float flashDuration = 0.15f;
     public float photoDuration = 2f;
 
+    [Header("Animação")]
+    [Tooltip("Escala final da foto")]
+    public float photoScale = 1f;
+
     private bool takingPhoto;
 
     private void Start()
     {
+        photo.rectTransform.localRotation = Quaternion.identity;
+        photo.rectTransform.localScale = Vector3.one;
+        photo.rectTransform.anchoredPosition = Vector2.zero;
+
         flash.color = new Color(1, 1, 1, 0);
 
         photo.gameObject.SetActive(false);
+
     }
 
-    private void Update()
+    public void Interact()
     {
-        if (!inventory.HasCamera)
+        if (takingPhoto)
             return;
 
-        if (Input.GetMouseButtonDown(0) && !takingPhoto)
-        {
-            StartCoroutine(TakePhoto());
-        }
+        StartCoroutine(TakePhoto());
     }
 
-    IEnumerator TakePhoto()
+    public string GetInteractionText()
+    {
+        return "Clique para tirar uma foto";
+    }
+
+    private IEnumerator TakePhoto()
     {
         takingPhoto = true;
 
-        flash.DOFade(1, flashDuration);
+        flash.DOFade(1f, flashDuration);
 
         yield return new WaitForSeconds(flashDuration);
 
-        flash.DOFade(0, flashDuration);
+        flash.DOFade(0f, flashDuration);
 
-        photo.gameObject.SetActive(true);
-
-        if (enemy.IsChasing)
+        if (enemy != null && enemy.IsChasing)
         {
             photo.sprite = specialPhoto;
         }
         else
         {
-            photo.sprite = Random.Range(0, 2) == 0
-                ? photo1
-                : photo2;
+            int sorteio = Random.Range(0, 2);
+
+
+            if (sorteio == 0)
+            {
+                photo.sprite = photo1;
+            }
+            else
+            {
+                photo.sprite = photo2;
+            }
         }
 
-        photo.rectTransform.localScale = Vector3.zero;
+        photo.gameObject.SetActive(true);
+
+
+        photo.rectTransform.localScale = Vector3.one * 0.15f;
 
         photo.rectTransform
-            .DOScale(1, 0.35f)
+            .DOScale(photoScale, 0.35f)
             .SetEase(Ease.OutBack);
 
         yield return new WaitForSeconds(photoDuration);
 
         photo.rectTransform
-            .DOScale(0, 0.2f);
+            .DOScale(0f, 0.2f)
+            .SetEase(Ease.InBack);
 
         yield return new WaitForSeconds(0.2f);
 

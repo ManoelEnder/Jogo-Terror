@@ -1,25 +1,22 @@
 using UnityEngine;
-using UnityEngine.AI;
 
 public class EnemyAI : MonoBehaviour
 {
     [Header("Referências")]
     public Transform target;
 
-    [Header("Configuração")]
+    [Header("Movimento")]
+    public float moveSpeed = 8f;
+    public float rotationSpeed = 5f;
     public float stopDistance = 2f;
 
     [HideInInspector]
     public bool IsChasing;
 
-    private NavMeshAgent agent;
     private bool activated;
 
     private void Awake()
     {
-        agent = GetComponent<NavMeshAgent>();
-        agent.stoppingDistance = stopDistance;
-
         activated = false;
         IsChasing = false;
     }
@@ -29,7 +26,6 @@ public class EnemyAI : MonoBehaviour
         activated = true;
         IsChasing = true;
 
-        Debug.Log("INIMIGO ATIVADO!");
     }
 
     private void Update()
@@ -40,6 +36,28 @@ public class EnemyAI : MonoBehaviour
         if (target == null)
             return;
 
-        agent.SetDestination(target.position);
+        Vector3 direction = target.position - transform.position;
+        float distance = direction.magnitude;
+
+        if (distance > stopDistance)
+        {
+            transform.position +=
+                direction.normalized *
+                moveSpeed *
+                Time.deltaTime;
+        }
+
+        if (direction != Vector3.zero)
+        {
+            Quaternion targetRotation =
+                Quaternion.LookRotation(direction);
+
+            transform.rotation =
+                Quaternion.Slerp(
+                    transform.rotation,
+                    targetRotation,
+                    rotationSpeed * Time.deltaTime
+                );
+        }
     }
 }

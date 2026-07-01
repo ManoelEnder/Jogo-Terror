@@ -17,7 +17,6 @@ public class PlayerInteractor : MonoBehaviour
 
         if (currentInteractable != null && Input.GetMouseButtonDown(0))
         {
-            Debug.Log("CLICOU NO OBJETO");
 
             currentInteractable.Interact();
 
@@ -55,11 +54,9 @@ public class PlayerInteractor : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, interactDistance))
         {
-            Debug.Log("Acertou: " + hit.collider.name);
 
             currentInteractable =
                 hit.collider.GetComponentInParent<IInteractable>();
-            Debug.Log("Interactable: " + currentInteractable);
 
             if (currentInteractable != null)
             {
